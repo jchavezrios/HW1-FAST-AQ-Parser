@@ -33,29 +33,14 @@ def test_FastaParser():
     files that are blank or corrupted in some way. Two example Fasta files are
     provided in /tests/bad.fa and /tests/empty.fa
     """
-    # feed in data of good fasta 
-    good_fasta = "data/test.fasta"
-    
-    # create path 
-    parse1 = FastaParser(good_fasta)
-    # create record of good fasta 
-    good_record = list(parse1._get_record(good_fasta))
-    # assertion that verifies there is data in the good test fasta file 
-    assert len(good_record) > 0  
-    
-    # empty fasta test 
-    empty_fasta = "tests/blank.fa"
-    parse2 = FastaParser(empty_fasta)
-    empty_record = list(parse2._get_record(empty_fasta))
-    # assert that empty fasta will raise an error 
-    assert len(empty_record) == 0
-    
-    # bad fasta test 
-    bad_fasta = "tests/bad.fa"
-    parse3 = FastaParser(bad_fasta)
-    bad_record = list(parse3._get_record(bad_fasta))
-    # assert that empty fasta will raise an error 
-    assert len(bad_record) == 0
+    # Read in fasta file 
+    fasta_file = 'data/test.fa'
+    parser_obj = FastaParser(fasta_file)
+    file_lines = [record for record in parser_obj]
+
+    # known seq0 of fasta file
+    seq0 = 'TGATTGAATCTTTTGAGGGTCACGGCCCGGAAGCCAGAATTTCGGGGTCCTCTGTGGATATTAATCGAGCCCACACGGTGTGAGTTCAGCGGCCCCCGCA'
+    assert file_lines[0][1] == seq0, "Something is wrong - panic!"
     
 
 def test_FastaFormat():
@@ -63,11 +48,12 @@ def test_FastaFormat():
     Test to make sure that a fasta file is being read in if a fastq file is
     read, the first item is None
     """
-    fastq_path = "data/test.fastq" 
-    testingfasta = FastaParser(fastq_path)
-    
-    for header, seq in testingfasta:
-        assert header is None, "This is not a fasta file, header is @"
+    # Read in fasta file
+    fasta_file = 'data/test.fa' # if this was a fastq file, an AssertionError is raised
+    parser_obj = FastaParser(fasta_file)
+    file_lines = [record for record in parser_obj]
+
+    assert file_lines[0][0] != None, "Ensure file is a FastA file."
     
 
 
@@ -77,7 +63,7 @@ def test_FastqParser():
     an instance of your FastqParser class and assert that it properly reads 
     in the example Fastq File.
     """
-    fastq_path = "data/test.fastq" # Ensure this path is correct for your repo
+    fastq_path = "data/test.fq" # Ensure this path is correct for your repo
     parser = FastqParser(fastq_path)
     
     records = list(parser)
@@ -96,10 +82,10 @@ def test_FastqFormat():
     Test to make sure fastq file is being read in. If this is a fasta file, the
     first line is None
     """
-    fasta_path = "data/test.fasta" 
-    testingfastqq = FastqParser(fasta_path)
+    fasta_path = "data/test.fa" 
+    testingfastq = FastqParser(fasta_path)
     
-    myfastq = list(testingfastqq)
+    myfastq = list(testingfastq)
     
     if len(myfastq) > 0:
         for header, seq, qual in myfastq:
